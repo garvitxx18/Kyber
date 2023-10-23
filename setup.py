@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup( 
 	name="mini-kyber", 
-	version="0.0.3", 
+	version="0.0.4", 
 	author="Garvit Prasad", 
 	author_email="garvitpd789@gmail.com", 
 	packages=["Kyber"], 
@@ -15,5 +15,5 @@ setuptools.setup(
 	url="https://github.com/garvitxx18/Kyber", 
 	license='MIT', 
 	python_requires='>=3.8', 
-	install_requires=[] 
+	install_requires=['numpy'] 
 ) 
