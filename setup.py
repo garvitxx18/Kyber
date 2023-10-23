@@ -1,27 +1,19 @@
-from setuptools import setup, find_packages
-import codecs
-import os
+import setuptools 
 
+with open("README.md", "r") as fh: 
+	description = fh.read() 
 
-VERSION = '0.0.1'
-DESCRIPTION = 'Kyber Encryption Algorithim'
-
-# Setting up
-setup(
-    name="mini-kyber",
-    version=VERSION,
-    author="Garvit Prasad",
-    author_email="<garvitpd789@gmail.com>",
-    description=DESCRIPTION,
-    packages=find_packages(),
-    install_requires=['numpy'],
-    keywords=['python', 'cryptography' , 'encryption' , 'quantum' , 'kyber' , 'falcon'],
-    classifiers=[
-        "Development Status :: 1 - Planning",
-        "Intended Audience :: Developers",
-        "Programming Language :: Python :: 3",
-        "Operating System :: Unix",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
-    ]
-)
+setuptools.setup( 
+	name="mini-kyber", 
+	version="0.0.1", 
+	author="Garvit Prasad", 
+	author_email="garvitpd789@gmail.com", 
+	packages=["test_package"], 
+	description="A sample test package", 
+	long_description=description, 
+	long_description_content_type="text/markdown", 
+	url="https://github.com/garvitxx18/Kyber", 
+	license='MIT', 
+	python_requires='>=3.8', 
+	install_requires=[] 
+) 
