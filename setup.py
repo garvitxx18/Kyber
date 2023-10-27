@@ -4,11 +4,11 @@ with open("README.md", "r") as fh:
     description = fh.read()
 
 setuptools.setup(
-    name="mini-kyber",
-    version="0.0.7",
+    name="kyberz",
+    version="0.0.1",
     author="Garvit Prasad",
     author_email="garvitpd789@gmail.com",
-    packages=["Kyber"],
+    packages=["Kyberz"],
     description="Implementation of Kyber a post quantum encryption algorithim ",
     long_description=description,
     long_description_content_type="text/markdown",
