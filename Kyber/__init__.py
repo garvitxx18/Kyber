@@ -181,7 +181,7 @@ def convert_message_to_original(vec):
 
 class Kyber:
 
-    def decrypt(ciphertext, s):
+    def decrypt(self, ciphertext, s):
         u, v = ciphertext
         e0 = create_random_vector(1, 2, N, 1, 0)
         dv = matrix_multiplication(u, s, e0)
@@ -203,7 +203,7 @@ class Kyber:
 
         return convert_message_to_original(messages)
 
-    def create_keys():
+    def create_keys(self):
         A = create_random_vector(2, 2, N, q, 1)
         s = create_random_vector(2, 1, N, 2, 1)
         e = create_random_vector(2, 1, N, 2, 1)
@@ -214,7 +214,7 @@ class Kyber:
             'private_key': s
         }
 
-    def encrypt(str, KeyComponents):
+    def encrypt(self, str, KeyComponents):
         A, t = KeyComponents
         ct = len(str) % N
         while ct > 0:
