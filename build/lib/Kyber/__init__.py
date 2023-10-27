@@ -5,6 +5,7 @@ q = 1664
 mod = 2 * q + 1
 N = 256
 
+
 def addMod(a, b):
     val = (a + b) % mod
     if val > q:
@@ -13,10 +14,12 @@ def addMod(a, b):
         val += mod
     return val
 
+
 def print_matrix(matrix):
     for row in matrix:
         print(", ".join(map(str, row)))
         print()
+
 
 def mul(v1, v2):
     n = len(v1)
@@ -40,6 +43,7 @@ def mul(v1, v2):
 
     return ret
 
+
 def add(v1, v2):
     n = len(v1)
     ret = [0] * n
@@ -53,6 +57,7 @@ def add(v1, v2):
 
     return ret
 
+
 def subtract(v1, v2):
     n = len(v1)
     ret = [0] * n
@@ -65,6 +70,7 @@ def subtract(v1, v2):
         ret[i] = val
 
     return ret
+
 
 def matrix_multiplication(matrix1, matrix2, e):
     m = len(matrix1)
@@ -85,6 +91,7 @@ def matrix_multiplication(matrix1, matrix2, e):
 
     return ret
 
+
 def create_random_vector(m1, m2, m3, range_val, neg):
     vec = []
     for i in range(m1):
@@ -101,51 +108,10 @@ def create_random_vector(m1, m2, m3, range_val, neg):
         vec.append(inner_vec)
     return vec
 
-def encrypt(A, t, m):
-    r = create_random_vector(1, 2, N, 2, 1)
-    e1 = create_random_vector(1, 2, N, 2, 1)
-    e2 = create_random_vector(1, 2, N, 1, 0)
-
-    u = matrix_multiplication(r, A, e1)
-    V = matrix_multiplication(r, t, e2)
-
-    v = []
-    for i in range(len(m)):
-        v1 = add(V[0][0], m[i])
-        v.append(v1)
-
-    return u, v
-
-def decrypt(s, u, v):
-    e0 = create_random_vector(1, 2, N, 1, 0)
-    dv = matrix_multiplication(u, s, e0)
-
-    d_e = []
-    for i in range(len(v)):
-        d_e1 = subtract(v[i], dv[0][0])
-        d_e.append(d_e1)
-
-    messages = []
-    for i in range(len(v)):
-        message1 = ""
-        for j in range(len(d_e[i])):
-            if d_e[i][j] < -q / 2 or d_e[i][j] > q / 2:
-                message1 += '1'
-            else:
-                message1 += '0'
-        messages.append(message1)
-
-    return messages
-
-def create_keys():
-    A = create_random_vector(2, 2, N, q, 1)
-    s = create_random_vector(2, 1, N, 2, 1)
-    e = create_random_vector(2, 1, N, 2, 1)
-
-    return A, s, e
 
 def int_to_binary(n):
     return bin(n)[2:].zfill(8)
+
 
 def convert_message_to_binary(str):
     vec = []
@@ -160,6 +126,7 @@ def convert_message_to_binary(str):
             ret = ""
 
     return vec
+
 
 def convert_message_to_original(vec):
     ret = ""
@@ -176,30 +143,108 @@ def convert_message_to_original(vec):
 
     return ret
 
-def kyber(str):
-    KeyComponents = create_keys()
-    A, s, e = KeyComponents
-    t = matrix_multiplication(A, s, e)
-    ct = len(str) % N
-    while ct > 0:
-        str += '#'
-        ct -= 1
 
-    vec = convert_message_to_binary(str)
+def int_to_binary(n):
+    return bin(n)[2:].zfill(8)
 
-    m = []
 
-    for i in range(len(vec)):
-        ss = vec[i]
-        mvec = []
-        for c in ss:
-            if c == '0':
-                mvec.append(0)
-            else:
-                mvec.append(-q)
-        m.append(mvec)
+def convert_message_to_binary(str):
+    vec = []
+    ret = ""
 
-    u, v = encrypt(A, t, m)
+    for i in range(len(str)):
+        num = ord(str[i])
+        s = int_to_binary(num)
+        ret += s
+        if len(ret) == N:
+            vec.append(ret)
+            ret = ""
 
-    # print(u,v)
-    return u, v
+    return vec
+
+
+def convert_message_to_original(vec):
+    ret = ""
+    for s in vec:
+        n = len(s)
+        i = 0
+        while i < n:
+            binary_char = s[i:i + 8]
+            i += 8
+            num = int(binary_char, 2)
+            ch = chr(num)
+            if ch != '#':
+                ret += ch
+
+    return ret
+
+
+class Kyber:
+
+    def decrypt(ciphertext, s):
+        u, v = ciphertext
+        e0 = create_random_vector(1, 2, N, 1, 0)
+        dv = matrix_multiplication(u, s, e0)
+
+        d_e = []
+        for i in range(len(v)):
+            d_e1 = subtract(v[i], dv[0][0])
+            d_e.append(d_e1)
+
+        messages = []
+        for i in range(len(v)):
+            message1 = ""
+            for j in range(len(d_e[i])):
+                if d_e[i][j] < -q / 2 or d_e[i][j] > q / 2:
+                    message1 += '1'
+                else:
+                    message1 += '0'
+            messages.append(message1)
+
+        return convert_message_to_original(messages)
+
+    def create_keys():
+        A = create_random_vector(2, 2, N, q, 1)
+        s = create_random_vector(2, 1, N, 2, 1)
+        e = create_random_vector(2, 1, N, 2, 1)
+        t = matrix_multiplication(A, s, e)
+
+        return {
+            'public_key': (A, t),
+            'private_key': s
+        }
+
+    def encrypt(str, KeyComponents):
+        A, t = KeyComponents
+        ct = len(str) % N
+        while ct > 0:
+            str += '#'
+            ct -= 1
+
+        vec = convert_message_to_binary(str)
+
+        m = []
+
+        for i in range(len(vec)):
+            ss = vec[i]
+            mvec = []
+            for c in ss:
+                if c == '0':
+                    mvec.append(0)
+                else:
+                    mvec.append(-q)
+            m.append(mvec)
+
+        r = create_random_vector(1, 2, N, 2, 1)
+        e1 = create_random_vector(1, 2, N, 2, 1)
+        e2 = create_random_vector(1, 2, N, 1, 0)
+
+        u = matrix_multiplication(r, A, e1)
+        V = matrix_multiplication(r, t, e2)
+
+        v = []
+        for i in range(len(m)):
+            v1 = add(V[0][0], m[i])
+            v.append(v1)
+
+        return u, v
